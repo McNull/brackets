@@ -285,15 +285,11 @@ define(function (require, exports, module) {
                     tag: token.contents.toLowerCase(),
                     children: [],
                     attributes: {},
-                    parent: (stack.length ? stack[stack.length - 1] : null),
                     start: this.startOffset + token.start - 1,
                     weight: 0
                 };
                 newTag.tagID = this.getID(newTag);
                 nodeMap[newTag.tagID] = newTag;
-                if (newTag.parent) {
-                    newTag.parent.children.push(newTag);
-                }
                 this.currentTag = newTag;
                 
                 if (openImpliesClose.hasOwnProperty(newTag.tag)) {
@@ -303,6 +299,11 @@ define(function (require, exports, module) {
                         // Adjust backwards for the < before the tag name.
                         closeTag(token.start - 1);
                     }
+                }
+                
+                newTag.parent = (stack.length ? stack[stack.length - 1] : null);
+                if (newTag.parent) {
+                    newTag.parent.children.push(newTag);
                 }
                 
                 if (voidElements.hasOwnProperty(newTag.tag)) {
